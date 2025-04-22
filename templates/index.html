@@ -1,1 +1,104 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotação de Seguro Veicular</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Cotação de proteção Veicular</h1>
+    
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="tipoVeiculo">Tipo de Veículo</label>
+        <select id="tipoVeiculo" class="select">
+          <option value="" disabled selected>Selecione o tipo de veículo</option>
+          <option value="Carro Passeio">Carro Passeio</option>
+          <option value="SUV/Caminhonete">SUV/Caminhonete</option>
+          <option value="Moto">Moto</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="valorVeiculo">Valor do Veículo (R$)</label>
+        <input id="valorVeiculo" type="number" placeholder="Ex: 25000" class="input">
+      </div>
+      <div class="form-group">
+        <label for="regional">Regional:</label>
+        <select id="regional" class="select">
+            <option value="" disabled selected>Selecione a Regional</option>
+            <option value="Alagoas">Alagoas</option>
+            <option value="Recife">Recife</option>
+            <option value="João Pessoa">João Pessoa</option>
+            <option value="Natal">Natal</option>
+        </select>
+    </div>
+      <!-- Novo campo de consulta FIPE -->
+      <div class="form-group">
+        <label for="placaFipe">Consultar Placa FIPE</label>
+        <input id="placaFipe" type="text" placeholder="Digite a placa" class="input">
+        <button id="consultarFipeBtn" class="button button-secondary">Consultar FIPE</button>
+      </div>
+    </div>
+
+
+    <div id="resultadoFipe" class="resultado-fipe hidden">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Resultado Consulta FIPE</h2>
+        </div>
+        <div class="card-content">
+          <div id="detalhesPlacaFipe"></div>
+        </div>
+      </div>
+    </div>
+
+    <button id="calcularBtn" class="button button-primary">Calcular Cotação</button>
+    
+    <div id="resultadoCotacao" class="resultado-cotacao hidden">
+      <div class="tabs">
+        <div id="tabsList" class="tabs-list"></div>
+        <div id="tabsContent" class="tabs-content"></div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Adicionais Disponíveis</h2>
+          <p class="card-description">Personalize sua cobertura com adicionais</p>
+        </div>
+        <div class="card-content">
+          <div id="adicionaisContainer" class="adicionais-grid"></div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Resumo da Cotação</h2>
+        </div>
+        <div class="card-content">
+          <div id="resumoCotacao" class="resumo-cotacao"></div>
+        </div>
+        <div class="card-footer">
+          <button id="gerarCotacaoBtn" class="button button-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Gerar Cotação
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/static/js/script.js"></script>
+  <script src="/static/js/consulta-fipe.js"></script>
+  <script src="/static/js/calculo-cotacao.js"></script>
+
+</body>
+</html>
