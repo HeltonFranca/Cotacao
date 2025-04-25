@@ -825,7 +825,7 @@ function gerarCotacaoPDF() {
   
   const rastreadorChecked = document.getElementById('rastreamento') ? document.getElementById('rastreamento').checked : false;
   const custoInstalacaoRastreador = rastreadorChecked ? "R$ 99,90" : "R$ 0,00";
-  const mensalidadeRastreador = rastreadorChecked ? "R$ 49,90" : "R$ 0,00";
+  const mensalidadeRastreador = rastreadorChecked ? "R$ 39,90" : "R$ 0,00";
   
   // Informações de reboque
   let reboqueDescricao = "200KM/400KM";
@@ -996,7 +996,7 @@ const itens = [
   },
   {
     label: "Rastreador (Instalação) + (Mensalidade)", 
-    value: rastreadorChecked ? "R$ 99,90  + R$ 49,90" : "Não adicionado", 
+    value: rastreadorChecked ? "R$ 99,90  + R$ 39,90" : "Não adicionado", 
     xLabel: 17, 
     xValue: 170, 
     y: 113 
