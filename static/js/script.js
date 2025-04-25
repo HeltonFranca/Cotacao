@@ -337,6 +337,12 @@ function exibirResultado() {
   // Mostrar a seção de resultados
   resultadoCotacao.classList.remove("hidden");
   
+  // Verificações de segurança
+  if (!planosDisponiveis || planosDisponiveis.length === 0) {
+    console.error('Nenhum plano disponível');
+    return;
+  }
+  
   // Criar tabs para cada plano disponível
   planosDisponiveis.forEach((plano, index) => {
     // Criar o botão da tab
@@ -355,25 +361,52 @@ function exibirResultado() {
     // Encontrar o valor do plano para o veículo
     const valor = parseFloat(valorVeiculo);
     const tabela = tabelaPrecos[tipoVeiculo];
-    const faixa = tabela.faixasValor.find(f => valor >= f.min && valor <= f.max);
+    
+    // Verificações de segurança adicionais
+    if (!tabela) {
+      console.error(`Tabela não encontrada para o tipo de veículo: ${tipoVeiculo}`);
+      return;
+    }
+    
+    const faixa = tabela.faixasValor.find(f => valor >= f.min && valor <= f.max) || 
+                  tabela.faixasValor[tabela.faixasValor.length - 1];
     const valorPlano = faixa[plano];
+    
+    // Tratamento para coberturas
+    let coberturasHTML = '';
+    try {
+      if (Array.isArray(tabela.coberturas[plano])) {
+        // Se for um array
+        coberturasHTML = tabela.coberturas[plano].map(cobertura => `
+          <li class="resumo-item">
+            <span>${cobertura}</span>
+          </li>
+        `).join('');
+      } else if (typeof tabela.coberturas[plano] === 'object') {
+        // Se for um objeto
+        coberturasHTML = Object.entries(tabela.coberturas[plano]).map(([cobertura, valor]) => `
+          <li class="resumo-item">
+            <span>${cobertura}</span>
+            <span class="resumo-valor">${valor}</span>
+          </li>
+        `).join('');
+      } else {
+        console.warn(`Formato de coberturas não reconhecido para o plano ${plano}`);
+      }
+    } catch (error) {
+      console.error('Erro ao processar coberturas:', error);
+    }
     
     // Criar o conteúdo do card
     tabContent.innerHTML = `
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">Plano ${getNomeSubtipo(plano)}</h2>
-          <p class="card-description">Valor base: R$ ${valorPlano.toFixed(2)}</p>
         </div>
         <div class="card-content">
           <h3 class="font-semibold mb-2">Coberturas Incluídas:</h3>
           <ul class="space-y-1">
-            ${Object.entries(tabela.coberturas[plano]).map(([cobertura, valor]) => `
-              <li class="resumo-item">
-                <span>${cobertura}</span>
-                <span class="resumo-valor">${valor}</span>
-              </li>
-            `).join('')}
+            ${coberturasHTML}
           </ul>
         </div>
       </div>
@@ -388,6 +421,7 @@ function exibirResultado() {
   // Atualizar resumo
   atualizarResumo();
 }
+
 
 // Trocar plano selecionado
 function trocarPlano(plano) {
@@ -492,6 +526,11 @@ function calcularValorTotal() {
 function atualizarResumo() {
   const resumoCotacao = document.getElementById("resumoCotacao");
   
+  // Calcular cota de participação
+  const valorFipe = parseFloat(valorVeiculo);
+  const cotaParticipacao = getValorPadraoParticipacao(tipoVeiculo);
+  const valorCota = (cotaParticipacao / 100) * valorFipe;
+
   let html = `
     <div class="resumo-item">
       <span class="resumo-label">Tipo de Veículo:</span>
@@ -506,7 +545,16 @@ function atualizarResumo() {
       <span class="resumo-valor">R$ ${parseFloat(valorVeiculo).toFixed(2)}</span>
     </div>
     <div class="resumo-item">
-      <span class="resumo-label">Valor Base:</span>
+      <span class="resumo-label">Cota de Participação R$ ${valorCota.toFixed(2)} (${cotaParticipacao}%)</span>
+
+      <div class="resumo-detalhe">
+        <p class="observacao">
+          <strong>Observação:</strong> Valor real da cota de participação para este veículo.
+        </p>
+      </div>
+    </div>
+    <div class="resumo-item">
+      <span class="resumo-label">Valor Médio da mensalidade:</span>
       <span class="resumo-valor">R$ ${cotacao.valorBase.toFixed(2)}</span>
     </div>
   `;
@@ -582,9 +630,9 @@ function textoSeguro(texto) {
 // Função para definir o valor padrão da cota de participação com base no tipo de veículo
 function getValorPadraoParticipacao(tipoVeiculo) {
   const tipo = tipoVeiculo.toLowerCase();
-  if (tipo.includes('moto')) return 5.0;
-  if (tipo.includes('suv')) return 9.0;
-  return 7.0; // carro padrão
+  if (tipo.includes('moto')) return 8.0;
+  if (tipo.includes('suv')) return 10.0;
+  return 9.0; // carro padrão
 }
 
 // Definição dos adicionais de AP e APP conforme a tabela
@@ -668,7 +716,7 @@ function criarCamposConfiguracao() {
   const inputAdesao = document.createElement('input');
   inputAdesao.type = 'number';
   inputAdesao.id = 'valorAdesao';
-  inputAdesao.value = '99.90';
+  inputAdesao.value = '200.00';
   inputAdesao.step = '0.01';
   inputAdesao.min = '0';
   inputAdesao.style.width = '80px';
@@ -876,8 +924,41 @@ function gerarCotacaoPDF() {
   const imgFundo = new Image();
   imgFundo.src = '/static/images/template-cotacao.png';
   const numeroCotacao = Math.floor(Math.random() * 900000) + 100000;
-  // Função para desenhar o conteúdo do PDF após o carregamento da imagem
-  const desenharPDF = () => {
+  function enviarCotacao(numeroCotacao) {
+    // Objeto de dados para enviar
+    const dadosCotacao = {
+      numeroCotacao: numeroCotacao,
+      valorVeiculo: valorVeiculo,
+      tipoVeiculo: tipoVeiculo,
+      planoSelecionado: planoSelecionado,
+      adicionaisSelecionados: adicionaisSelecionados,
+      valorTotal: valorTotal
+    };
+  
+    // Adicionar placa apenas se estiver disponível
+    const placaInput = document.getElementById('placa');
+    if (placaInput && placaInput.value) {
+      dadosCotacao.placa = placaInput.value;
+    }
+  
+    fetch('/salvar_cotacao', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dadosCotacao)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Cotação salva:', data);
+      // Pode adicionar tratamento de sucesso aqui
+    })
+    .catch(error => {
+      console.error('Erro ao salvar cotação:', error);
+    });
+  }
+  
+   const desenharPDF = () => {
     // Adicionar imagem de fundo
     try {
       doc.addImage(imgFundo, 'JPEG', 0, 0, 210, 297); // A4 = 210x297mm
@@ -1034,6 +1115,7 @@ itens.forEach(item => {
     
     // Salvar o PDF
     doc.save(`Cotacao_ClasseA_${numeroCotacao}.pdf`);
+    enviarCotacao(numeroCotacao);
   };
   
   // Se a imagem de fundo estiver disponível, aguarde o carregamento
