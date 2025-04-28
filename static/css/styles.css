@@ -294,6 +294,7 @@ label {
   border: 1px solid rgba(128, 128, 128, 0.3);
   border-radius: 12px;
   width: calc(100%); 
+  right: -20%; /* Empurra para a direita */
   max-width: 55%;
   position: relative;
   z-index: 10;
