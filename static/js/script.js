@@ -647,8 +647,8 @@ function textoSeguro(texto) {
 function getValorPadraoParticipacao(tipoVeiculo) {
   const tipo = tipoVeiculo.toLowerCase();
   if (tipo.includes('moto')) return 8.0;
-  if (tipo.includes('suv')) return 10.0;
-  return 9.0; // carro padrão
+  if (tipo.includes('suv')) return 9.0;
+  return 7.0; // carro padrão
 }
 
 // Definição dos adicionais de AP e APP conforme a tabela
