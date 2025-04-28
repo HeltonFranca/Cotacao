@@ -1,4 +1,3 @@
-
 /* Estilos gerais */
 * {
   box-sizing: border-box;
@@ -17,6 +16,15 @@ body {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
+  width: calc(100% - 250px); /* Ajuste para sidebar de 250px */
+  margin-left: auto; /* Alinha à direita da sidebar */
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%; /* Largura total em telas menores */
+    margin-left: 0;
+  }
 }
 
 .hidden {
@@ -279,4 +287,29 @@ label {
   justify-content: space-between;
   font-weight: 700;
   font-size: 1.125rem;
+}
+#configCotacao {
+  margin-bottom: 20px; 
+  padding: 15px; 
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 12px;
+  width: calc(100% - 20%); 
+  max-width: 49%;
+  position: relative;
+  right: -40%; /* Empurra para a direita */
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  #configCotacao {
+    width: 95%; /* Largura quase total em telas menores */
+    position: static; /* Remove posicionamento absoluto em telas pequenas */
+    top: auto;
+    left: auto;
+    transform: none;
+    max-width: none;
+  }
 }
