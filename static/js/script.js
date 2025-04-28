@@ -258,6 +258,22 @@ document.addEventListener('DOMContentLoaded', function() {
   gerarCotacaoBtn.addEventListener("click", gerarCotacaoPDF);
 });
 
+const imagensFundoPorPlano = {
+  "Carro Passeio": {
+    "prata": "/static/images/template-prata.jpeg",
+    "ouro": "/static/images/template-ouro.jpeg",
+    "platinum": "/static/images/template-plat.jpeg"
+  },
+  "SUV/Caminhonete": {
+    "comercial": "/static/images/template-comercial.jpeg",
+    "suv": "/static/images/template-suv.png",
+    "vans": "/static/images/template-vans.png"
+  },
+  "Moto": {
+    "prata": "/static/images/template-prata.jpeg",
+    "ouro": "/static/images/template-ouro.jpeg"
+  }
+};
 // Nomes amigáveis para os subtipos
 const getNomeSubtipo = (subtipo) => {
   const nomes = {
@@ -631,8 +647,8 @@ function textoSeguro(texto) {
 function getValorPadraoParticipacao(tipoVeiculo) {
   const tipo = tipoVeiculo.toLowerCase();
   if (tipo.includes('moto')) return 8.0;
-  if (tipo.includes('suv')) return 9.0;
-  return 7.0; // carro padrão
+  if (tipo.includes('suv')) return 10.0;
+  return 9.0; // carro padrão
 }
 
 // Definição dos adicionais de AP e APP conforme a tabela
@@ -922,7 +938,8 @@ function gerarCotacaoPDF() {
   
   // Carregar imagem de fundo (substitua pelo URL da sua imagem)
   const imgFundo = new Image();
-  imgFundo.src = '/static/images/template-cotacao.png';
+  const imagemFundo = imagensFundoPorPlano[tipoVeiculo]?.[planoSelecionado]
+  imgFundo.src = imagemFundo;
   const numeroCotacao = Math.floor(Math.random() * 900000) + 100000;
   function enviarCotacao(numeroCotacao) {
     // Objeto de dados para enviar
@@ -959,24 +976,22 @@ function gerarCotacaoPDF() {
   }
   
    const desenharPDF = () => {
-    // Adicionar imagem de fundo
     try {
       doc.addImage(imgFundo, 'JPEG', 0, 0, 210, 297); // A4 = 210x297mm
     } catch (e) {
       console.error("Erro ao adicionar imagem de fundo:", e);
-      // Continuar sem a imagem de fundo
     }
     
     // Configurações de fonte
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFont("Teko", "Semibold");
+    doc.setFontSize(9);
     
     // Definir itens a serem impressos no PDF com suas coordenadas
 // Definir itens a serem impressos no PDF com suas coordenadas
 const itens = [
   // Informações do veículo
-  { label: "", value: textoSeguro(modelo), xLabel: 17, xValue: 170, y: 40 },
-  { label: "", value: formatarValorMonetario(valorFipe), xLabel: 7, xValue: 160, y: 50 },
+  //{ label: "", value: textoSeguro(modelo), xLabel: 17, xValue: 170, y: 40 },
+  { label: "Fipe média do veiculo :", value: formatarValorMonetario(valorFipe), xLabel: 130, xValue: 160, y: 50 },
   
   // Coberturas principais
   { label: textoSeguro(tipoVeiculoText), value: "Casco Total", xLabel: 17, xValue: 170, y: 92 },
