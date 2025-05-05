@@ -28,7 +28,7 @@ def consulta_placa():
         
         response = requests.post(url, json={
             'placa': placa,
-            'token': '6BA71BFA9755D20244C01DC5C6719A8A48D6C43B30F5C795571C2812E485F429'
+            'token': 'x'
         })
         
         data = response.json()
